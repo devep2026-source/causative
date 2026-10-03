@@ -35,6 +35,7 @@ select u.id,
        u.email,
        coalesce(nullif(u.raw_user_meta_data ->> 'full_name', ''), u.email)
 from auth.users u
+where u.email is not null
 on conflict (id) do nothing;
 
 -- profile row is created automatically at signup
