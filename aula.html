@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1a0510">
+<link rel="stylesheet" href="auth.css">
+<link rel="stylesheet" href="teacher.css">
+<title>Causative · Classroom</title>
+<style>
+.js .hide{display:none}
+.stage h3{margin-bottom:2px}
+.stage .where{margin:0 0 8px;color:#fbe39a;font-size:.85rem}
+.stage .timer{margin:6px 0}
+</style>
+</head>
+<body>
+
+<header class="thead">
+<p class="badge">Teacher · Classroom</p>
+<h1>Causative in class</h1>
+<p>The green activities from the lesson, ready to project. Each one has its own timer and a full-screen mode for the board.</p>
+</header>
+
+<nav class="tabs" id="tabs" aria-label="Views">
+<button type="button" class="tab on" data-view="live">🎯 Live activities</button>
+<button type="button" class="tab" data-view="progress">📊 Student progress</button>
+</nav>
+
+<div class="gate" id="gate" data-auth></div>
+
+<main id="app" hidden>
+
+<!-- ============ LIVE ACTIVITIES ============ -->
+<section id="view-live" class="wrap">
+<h2>Pick an activity</h2>
+<p class="muted">Filter by section, then press <b>Start timer</b>. <b>Full screen</b> fills the board.</p>
+<div class="chips" id="filters"></div>
+<div id="live-list"></div>
+</section>
+
+<!-- ============ STUDENT PROGRESS ============ -->
+<section id="view-progress" class="wrap" hidden>
+<h2>Student progress</h2>
+<p class="muted" id="prog-summary">Loading…</p>
+<div class="rowline">
+<label for="search" class="lbl">Search student</label>
+<input type="search" id="search" placeholder="name or email">
+<button type="button" class="btn small" id="reload">Reload</button>
+</div>
+<div id="prog-list"></div>
+</section>
+
+</main>
+
+<script src="config.js"></script>
+<script src="sb.js"></script>
+<script src="auth.js"></script>
+<script src="curriculum.js"></script>
+<script src="teacher.js"></script>
+<script>
+(function(){
+'use strict';
+var doc=document;
+function esc(s){return T.esc(s);}
+function el(id){return T.el(id);}
+
+/* ---------- filters ---------- */
+var filter='all';
+
+function buildFilters(){
+  var box=el('filters'),html='',i;
+  html+='<button type="button" class="chip on" data-f="all">All</button>';
+  for(i=0;i<Curriculum.sections.length;i++){
+    var s=Curriculum.sections[i];
+    html+='<button type="button" class="chip" data-f="'+s.id+'">'+esc(s.badge)+'</button>';
+  }
+  box.innerHTML=html;
+  var chips=T.qsa('.chip',box);
+  for(i=0;i<chips.length;i++){
+    chips[i].onclick=function(){
+      filter=this.getAttribute('data-f');
+      var j;for(j=0;j<chips.length;j++)chips[j].className='chip'+(chips[j]===this?' on':'');
+      renderLive();
+    };
+  }
+}
+
+/* ---------- live activities ---------- */
+function renderLive(){
+  var list=el('live-list'),html='',i,shown=0;
+  for(i=0;i<Curriculum.activities.length;i++){
+    var a=Curriculum.activities[i];
+    if(filter!=='all'&&a.section!==filter)continue;
+    shown++;
+    var sec=Curriculum.sectionById(a.section);
+    html+='<article class="stage" data-min="'+a.min+'" data-i="'+i+'">'+
+      '<h3>'+esc(a.title)+'</h3>'+
+      '<p class="where">'+esc(sec?sec.badge:'')+'</p>'+
+      a.html+
+      '<div class="timer" aria-live="off">--:--</div>'+
+      '<div class="acts">'+
+      '<button type="button" class="btn green t-start">Start timer</button>'+
+      '<button type="button" class="btn t-reset">Reset</button>'+
+      '<button type="button" class="btn t-full">Full screen</button>'+
+      '</div></article>';
+  }
+  if(!shown)html='<p class="muted">No activity for this section.</p>';
+  list.innerHTML=html;
+  var stages=T.qsa('.stage',list);
+  for(i=0;i<stages.length;i++)bindStage(stages[i]);
+}
+
+function bindStage(st){
+  var min=parseInt(st.getAttribute('data-min'),10)||5;
+  var start=T.qs('.t-start',st),reset=T.qs('.t-reset',st),full=T.qs('.t-full',st);
+  var tEl=T.qs('.timer',st);
+  var left=0,iv=null;
+  function draw(){T.txt(tEl,left?Math.floor(left/60)+':'+('0'+(left%60)).slice(-2):'--:--');}
+  function stop(){if(iv){clearInterval(iv);iv=null;}T.txt(start,'Start timer');}
+  start.onclick=function(){
+    if(iv){stop();return;}
+    left=min*60;
+    T.txt(start,'Stop');
+    draw();
+    iv=setInterval(function(){
+      left--;draw();
+      if(left<=0){stop();T.txt(tEl,"Time's up!");}
+    },1000);
+  };
+  reset.onclick=function(){stop();left=0;draw();T.txt(tEl,'--:--');};
+  full.onclick=function(){
+    if(!hasC(st,'big')){
+      doc.body.setAttribute('data-proj','1');
+      var tabs=T.qs('.tabs'),head=T.qs('.thead');
+      if(tabs)tabs.setAttribute('hidden','');
+      if(head)head.setAttribute('hidden','');
+      addC(st,'big');
+      T.txt(full,'Exit full screen');
+      if(doc.documentElement.requestFullscreen)try{doc.documentElement.requestFullscreen();}catch(e){}
+      try{st.focus();}catch(e){}
+    }else{
+      exitStage(st,full);
+    }
+  };
+  st.setAttribute('tabindex','-1');
+}
+function addC(e,c){if(!hasC(e,c))e.className=(e.className?e.className+' ':'')+c;}
+function remC(e,c){e.className=(' '+(e.className||'')+' ').replace(' '+c+' ',' ').replace(/^\s+|\s+$/g,'');}
+function hasC(e,c){return (' '+(e.className||'')+' ').indexOf(' '+c+' ')>-1;}
+function exitStage(st,full){
+  remC(st,'big');
+  T.txt(full,'Full screen');
+  var tabs=T.qs('.tabs'),head=T.qs('.thead');
+  if(tabs)tabs.removeAttribute('hidden');
+  if(head)head.removeAttribute('hidden');
+  doc.body.removeAttribute('data-proj');
+  if(doc.exitFullscreen&&doc.fullscreenElement){try{doc.exitFullscreen();}catch(e){}}
+}
+doc.addEventListener('keydown',function(e){
+  e=e||window.event;
+  var k=e.keyCode||e.which;
+  if(k!==27)return;
+  var st=T.qs('.stage.big');
+  if(st)exitStage(st,T.qs('.t-full',st));
+},false);
+/* ---------- progress ---------- */
+var data=null;
+
+function sectionRows(st){
+  var rows=[],i;
+  for(i=0;i<Curriculum.sections.length;i++){
+    var s=Curriculum.sections[i];
+    rows.push({sec:s,st:Curriculum.stats(s,st)});
+  }
+  return rows;
+}
+
+function renderProgress(){
+  if(!data)return;
+  var list=el('prog-list');
+  var all=T.students(data);
+  var q=(el('search').value||'').toLowerCase().replace(/^\s+|\s+$/g,'');
+  var html='',i,shown=0,active=0;
+  for(i=0;i<all.length;i++){
+    var p=all[i],rec=data.byId[p.id];
+    if(q&&(p.full_name||'').toLowerCase().indexOf(q)<0&&(p.email||'').toLowerCase().indexOf(q)<0)continue;
+    shown++;
+    var st=state(p.id),ov=Curriculum.overall(st);
+    if(ov.done)active++;
+    var pts=T.pointsOf(data,p.id),upd=T.updatedOf(data,p.id);
+    html+='<article class="stu" data-id="'+p.id+'">'+
+      '<div class="rowline"><span class="lbl"><h3>'+esc(p.full_name||p.email)+'</h3>'+
+      '<span class="mail">'+esc(p.email)+'</span></span>'+
+      T.bar(ov.pct)+'<span class="pct">'+ov.pct+'%</span></div>'+
+      '<p class="muted">'+pts+' pts · '+(ov.wrong?ov.wrong+' wrong answers · ':'')+T.fmtWhen(upd)+'</p>'+
+      '<div class="det" hidden></div>'+
+      '<p class="rowline"><button type="button" class="btn small t-det">Details</button>'+
+      '<a class="btn small" href="taller.html?st='+p.id+'">Open in Workshop</a></p>'+
+      '</article>';
+  }
+  if(!shown)html='<p class="muted">No student matches that search.</p>';
+  if(!all.length)html='<p class="muted">No students yet. They create their account from the lesson page with the access code you gave them.</p>';
+  list.innerHTML=html;
+  T.txt(el('prog-summary'),all.length+' students · '+active+' with progress started');
+  var btns=T.qsa('.t-det',list);
+  for(i=0;i<btns.length;i++)btns[i].onclick=function(){
+    var card=this;while(card&&!hasC(card,'stu'))card=card.parentNode;
+    if(!card)return;
+    var det=T.qs('.det',card);
+    if(!det.hasAttribute('hidden')){det.setAttribute('hidden','');T.txt(this,'Details');return;}
+    det.innerHTML=detailHTML(card.getAttribute('data-id'));
+    det.removeAttribute('hidden');
+    T.txt(this,'Hide');
+  };
+}
+function state(id){return T.stateOf(data,id);}
+
+function detailHTML(id){
+  var st=state(id),rows=sectionRows(st),html='<div class="grid">',i;
+  for(i=0;i<rows.length;i++){
+    html+='<div><p class="muted">'+esc(rows[i].sec.badge)+'</p>'+T.bar(rows[i].st.pct,true)+
+      ' <span class="pct">'+rows[i].st.pct+'%</span></div>';
+  }
+  html+='</div>';
+  var wrong=T.wrongList(st);
+  if(wrong.length){
+    html+='<p><b>Most missed questions</b></p><ul>';
+    for(i=0;i<wrong.length&&i<8;i++){
+      html+='<li>'+esc(T.floorLabel(wrong[i].floor))+' · question '+(parseInt(wrong[i].item,10)+1)+
+        ' · '+wrong[i].misses+' miss'+(wrong[i].misses>1?'es':'')+'</li>';
+    }
+    html+='</ul>';
+  }else{
+    html+='<p class="muted">No recorded mistakes.</p>';
+  }
+  var weak=Curriculum.weakest(st,2),k;
+  if(weak.length){
+    html+='<p><b>Weak sections</b></p><ul>';
+    for(k=0;k<weak.length;k++)html+='<li>'+esc(weak[k].sec.badge)+' — '+weak[k].s.pct+'% complete</li>';
+    html+='</ul>';
+  }
+  return html;
+}
+
+function reload(){
+  T.msg(el('prog-summary'),'Loading…');
+  T.loadData().then(function(d){
+    data=d;
+    renderProgress();
+  },function(err){
+    T.msg(el('prog-summary'),Auth.friendly(err),'bad');
+  });
+}
+
+/* ---------- boot ---------- */
+el('search').oninput=renderProgress;
+el('reload').onclick=reload;
+
+var tabs=T.qsa('#tabs .tab'),i;
+for(i=0;i<tabs.length;i++){
+  tabs[i].onclick=function(){
+    var j;for(j=0;j<tabs.length;j++)tabs[j].className='tab'+(tabs[j]===this?' on':'');
+    var v=this.getAttribute('data-view');
+    el('view-live').hidden=(v!=='live');
+    el('view-progress').hidden=(v!=='progress');
+    if(v==='progress'&&!data)reload();
+    if(v==='live')renderLive();
+  };
+}
+
+buildFilters();
+renderLive();
+
+T.gate({el:el('gate'),app:el('app'),onReady:function(){reload();}});
+})();
+</script>
+</body>
+</html>

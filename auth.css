@@ -1,0 +1,25 @@
+/* auth.css · sign-in box shared by index / aula / taller */
+.authbox{background:linear-gradient(160deg,#250615,#12030a);border:1px solid rgba(240,189,74,.45);border-radius:16px;padding:14px 16px;margin:16px 0;text-align:left;max-width:520px;margin-left:auto;margin-right:auto}
+.auth-head{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-ms-flex-wrap:wrap;flex-wrap:wrap;-webkit-flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.auth-brand{font-weight:800;letter-spacing:.05em;font-size:.8rem;color:#8fe8b8;text-transform:uppercase}
+.auth-tabs{display:flex;gap:6px}
+.auth-tab{font:inherit;font-weight:800;font-size:.82rem;color:#fff6e2;background:transparent;border:1px solid rgba(240,189,74,.4);border-radius:99px;padding:6px 12px;min-height:34px;cursor:pointer}
+.auth-tab.on{background:#f0bd4a;color:#2a0715;border-color:#f0bd4a}
+.auth-form label{display:block;font-size:.85rem;color:#fbe39a;font-weight:700;margin:8px 0 0}
+.auth-form input{width:100%;box-sizing:border-box;margin-top:4px;font-family:inherit;font-size:1rem;color:#fff6e2;background:rgba(0,0,0,.55);border:2px solid rgba(240,189,74,.55);border-radius:12px;padding:10px;min-height:48px}
+.auth-form input:focus{border-color:#f0bd4a}
+.auth-submit{width:100%;margin-top:12px}
+.auth-msg{min-height:1.3em;font-size:.9rem;margin:8px 0 0;color:#fbe39a}
+.auth-msg.ok{color:#8fe8b8}
+.auth-msg.bad{color:#ff9b9b}
+.auth-help{font-size:.8rem;color:#e7cfa8;margin:8px 0 0;opacity:.85}
+.auth-note{font-size:.85rem;color:#fbe39a;margin:0 0 8px}
+.auth-who{display:block;font-size:.95rem;color:#fff6e2}
+.auth-who small{color:#d9b98a;display:block;font-size:.78rem;word-break:break-all}
+.auth-role{display:inline-block;background:#3fbf7f;color:#052014;font-size:.7rem;font-weight:800;border-radius:99px;padding:2px 8px;margin-left:6px;text-transform:uppercase;vertical-align:middle}
+.auth-out{margin-top:10px;font-family:inherit;font-weight:800;font-size:.9rem;color:#fff6e2;background:transparent;border:2px solid #f0bd4a;border-radius:12px;padding:9px 14px;min-height:44px;cursor:pointer}
+.auth-out:hover{background:rgba(240,189,74,.2)}
+.auth-denied{margin:0}
+.auth-denied p{margin:6px 0}
+/* teacher pages gate */
+.gate{max-width:520px;margin:40px auto;padding:0 16px}

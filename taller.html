@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1a0510">
+<link rel="stylesheet" href="auth.css">
+<link rel="stylesheet" href="teacher.css">
+<title>Causative · Workshop</title>
+<style>
+.matrix td.p{text-align:center;font-weight:800}
+.matrix td.p.low{color:#ff9b9b}
+.matrix td.p.mid{color:#fbe39a}
+.matrix td.p.high{color:#8fe8b8}
+.picker{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.picker label{flex:1 1 260px;margin-top:0}
+.assign{border-left:4px solid #3fbf7f;background:linear-gradient(160deg,#0f2a1f,#0a1c15);border:1px solid rgba(63,191,127,.45);border-left:4px solid #3fbf7f;border-radius:12px;padding:12px 14px;margin:10px 0}
+.assign h4{margin:0 0 4px;color:#8fe8b8;font-size:1rem}
+.assign .body p{margin:.4em 0}
+.assign .body ol,.assign .body ul{margin:.4em 0;padding-left:20px}
+.tag{display:inline-block;background:rgba(240,189,74,.18);border:1px solid rgba(240,189,74,.5);color:#fbe39a;border-radius:99px;padding:1px 9px;font-size:.72rem;margin:2px 4px 0 0}
+.done{opacity:.6}
+</style>
+</head>
+<body>
+
+<header class="thead">
+<p class="badge">Teacher · Workshop</p>
+<h1>Registry &amp; extra activities</h1>
+<p>See how every student is doing section by section, and send extra practice to the ones who need it.</p>
+</header>
+
+<nav class="tabs" id="tabs" aria-label="Views">
+<button type="button" class="tab on" data-view="reg">📋 Registry</button>
+<button type="button" class="tab" data-view="work">🛠 Workshop</button>
+</nav>
+
+<div class="gate" id="gate" data-auth></div>
+
+<main id="app" hidden>
+
+<!-- ============ REGISTRY ============ -->
+<section id="view-reg" class="wrap">
+<h2>Class registry</h2>
+<p class="muted" id="reg-summary">Loading…</p>
+<div class="rowline">
+<label for="reg-search" class="lbl">Search</label>
+<input type="search" id="reg-search" placeholder="name or email">
+<button type="button" class="btn small" id="reg-reload">Reload</button>
+</div>
+<div class="tw">
+<table class="matrix">
+<thead><tr id="reg-head"></tr></thead>
+<tbody id="reg-body"></tbody>
+</table>
+</div>
+<p class="muted">Tap a name to open that student in the Workshop. Percentages come from the student's own answers, checkpoints and writing tasks.</p>
+</section>
+
+<!-- ============ WORKSHOP ============ -->
+<section id="view-work" class="wrap" hidden>
+<h2>Student workshop</h2>
+<div class="picker">
+<label for="stu">Student
+<select id="stu"></select></label>
+<button type="button" class="btn small" id="work-reload">Reload</button>
+</div>
+
+<div id="work-summary" class="panel"><p class="muted">Pick a student.</p></div>
+
+<h3>Sections</h3>
+<div id="work-sections" class="grid"></div>
+
+<h3>Suggested extra activities</h3>
+<p class="muted">Based on the sections with the lowest progress and the most missed answers. One tap sends it to the student's page.</p>
+<div id="work-suggest"></div>
+
+<h3>Create your own</h3>
+<form id="custom" class="panel">
+<label for="c-floor">Section</label>
+<select id="c-floor"></select>
+<label for="c-title">Title</label>
+<input type="text" id="c-title" placeholder="Repair: get + person + to" required>
+<label for="c-body">Instructions (blank line = new paragraph)</label>
+<textarea id="c-body" placeholder="Write 5 sentences with get + person + to verb.&#10;&#10;Check them against the golden rule." required></textarea>
+<p class="msg" id="c-msg" role="status" aria-live="polite"></p>
+<button type="submit" class="btn green">Send to this student</button>
+</form>
+
+<h3>Assigned to this student</h3>
+<div id="work-assigned"></div>
+</section>
+
+</main>
+
+<script src="config.js"></script>
+<script src="sb.js"></script>
+<script src="auth.js"></script>
+<script src="curriculum.js"></script>
+<script src="teacher.js"></script>
+<script>
+(function(){
+'use strict';
+var doc=document,data=null,assignments=[],curId=null;
+
+function esc(s){return T.esc(s);}
+function el(id){return T.el(id);}
+
+/* ---------- helpers ---------- */
+function pctClass(p){return p>=70?'high':(p>=40?'mid':'low');}
+
+function textToHTML(s){
+  var blocks=String(s||'').split(/\n\s*\n/),html='',i,j;
+  for(i=0;i<blocks.length;i++){
+    var lines=blocks[i].split('\n'),inner='';
+    for(j=0;j<lines.length;j++){
+      if(!lines[j].replace(/^\s+|\s+$/g,''))continue;
+      inner+=(j?'<br>':'')+esc(lines[j]);
+    }
+    if(inner)html+='<p>'+inner+'</p>';
+  }
+  return html||'<p></p>';
+}
+
+function studentById(id){
+  var i;for(i=0;i<data.profiles.length;i++)if(data.profiles[i].id===id)return data.profiles[i];
+  return null;
+}
+
+/* ---------- registry ---------- */
+function renderHead(){
+  var html='<th>Student</th><th>Overall</th>',i;
+  for(i=0;i<Curriculum.sections.length;i++)html+='<th>'+esc(Curriculum.sections[i].id.toUpperCase())+'</th>';
+  html+='<th class="num">Pts</th><th>Last activity</th>';
+  el('reg-head').innerHTML=html;
+}
+
+function renderReg(){
+  if(!data)return;
+  var all=T.students(data);
+  var q=(el('reg-search').value||'').toLowerCase().replace(/^\s+|\s+$/g,'');
+  var html='',i,j,shown=0;
+  for(i=0;i<all.length;i++){
+    var p=all[i];
+    if(q&&(p.full_name||'').toLowerCase().indexOf(q)<0&&(p.email||'').toLowerCase().indexOf(q)<0)continue;
+    shown++;
+    var st=T.stateOf(data,p.id),ov=Curriculum.overall(st);
+    html+='<tr><td><a href="#" data-st="'+p.id+'">'+esc(p.full_name||p.email)+'</a></td>'+
+      '<td class="p '+pctClass(ov.pct)+'">'+ov.pct+'%</td>';
+    for(j=0;j<Curriculum.sections.length;j++){
+      var s=Curriculum.stats(Curriculum.sections[j],st);
+      html+='<td class="p '+pctClass(s.pct)+'">'+(s.total?s.pct+'%':'–')+'</td>';
+    }
+    html+='<td class="num">'+T.pointsOf(data,p.id)+'</td><td>'+T.fmtWhen(T.updatedOf(data,p.id))+'</td></tr>';
+  }
+  if(!all.length)html='<tr><td colspan="13" class="muted">No students yet. They create their account from the lesson page with the access code you gave them.</td></tr>';
+  else if(!shown)html='<tr><td colspan="13" class="muted">No student matches that search.</td></tr>';
+  el('reg-body').innerHTML=html;
+  T.txt(el('reg-summary'),all.length+' students · '+shown+' shown');
+  var links=T.qsa('#reg-body a[data-st]'),k;
+  for(k=0;k<links.length;k++){
+    links[k].onclick=function(e){
+      if(e&&e.preventDefault)e.preventDefault();
+      select(this.getAttribute('data-st'));
+      switchView('work');
+      return false;
+    };
+  }
+}
+
+/* ---------- workshop ---------- */
+function fillPicker(){
+  var all=T.students(data),html='',i;
+  for(i=0;i<all.length;i++){
+    html+='<option value="'+all[i].id+'"'+(all[i].id===curId?' selected':'')+'>'+
+      esc(all[i].full_name||all[i].email)+'</option>';
+  }
+  if(!all.length)html='<option value="">No students yet</option>';
+  el('stu').innerHTML=html;
+}
+
+function fillFloors(){
+  var sel=el('c-floor'),h='',i;
+  if(sel.options.length)return;
+  for(i=0;i<Curriculum.sections.length;i++)
+    h+='<option value="'+Curriculum.sections[i].id+'">'+esc(Curriculum.sections[i].badge)+'</option>';
+  sel.innerHTML=h;
+}
+
+function renderWork(){
+  if(!data)return;
+  fillPicker();
+  if(!curId){
+    el('work-summary').innerHTML='<p class="muted">Pick a student.</p>';
+    el('work-sections').innerHTML='';
+    el('work-suggest').innerHTML='';
+    el('work-assigned').innerHTML='';
+    return;
+  }
+  var p=studentById(curId);
+  if(!p){curId=null;return renderWork();}
+  var st=T.stateOf(data,curId),ov=Curriculum.overall(st);
+  el('work-summary').innerHTML=
+    '<div class="rowline"><span class="lbl"><h3 style="margin:0">'+esc(p.full_name||p.email)+'</h3>'+
+    '<span class="muted">'+esc(p.email)+'</span></span>'+T.bar(ov.pct)+'<span class="pct">'+ov.pct+'%</span></div>'+
+    '<p class="muted">'+T.pointsOf(data,curId)+' pts · '+ov.wrong+' wrong answers · last activity '+
+    T.fmtWhen(T.updatedOf(data,curId))+'</p>';
+
+  var html='',i;
+  for(i=0;i<Curriculum.sections.length;i++){
+    var s=Curriculum.stats(Curriculum.sections[i],st);
+    html+='<div><p class="muted">'+esc(Curriculum.sections[i].badge)+'</p>'+
+      T.bar(s.pct,true)+' <span class="pct">'+s.pct+'%</span>'+
+      (s.wrong?'<span class="muted"> · '+s.wrong+' miss</span>':'')+'</div>';
+  }
+  el('work-sections').innerHTML=html;
+
+  renderSuggest(st);
+  renderAssigned();
+}
+
+function alreadyAssigned(title){
+  var i;
+  for(i=0;i<assignments.length;i++){
+    if(assignments[i].student_id===curId&&assignments[i].title===title)return true;
+  }
+  return false;
+}
+
+function renderSuggest(st){
+  var weak=Curriculum.weakest(st,3),box=el('work-suggest'),html='',i,j,n=0;
+  if(!weak.length){
+    html='<p class="muted">No progress recorded yet. Suggested activities appear as soon as this student answers something.</p>';
+    box.innerHTML=html;
+    return;
+  }
+  for(i=0;i<weak.length;i++){
+    var sec=weak[i].sec,list=Curriculum.bank[sec.id]||[];
+    for(j=0;j<list.length;j++){
+      var a=list[j];
+      if(alreadyAssigned(a.title))continue;
+      n++;
+      html+='<div class="assign" data-sec="'+sec.id+'">'+
+        '<h4>'+esc(a.title)+'</h4>'+
+        '<p class="muted">'+esc(sec.badge)+' · suggested because: '+
+        (weak[i].s.wrong?weak[i].s.wrong+' missed answers':'only '+weak[i].s.pct+'% complete')+'</p>'+
+        '<div class="body">'+a.body+'</div>'+
+        '<p>'+((a.tags||[]).map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join(''))+'</p>'+
+        '<button type="button" class="btn green small t-send">Send to student</button>'+
+        '</div>';
+    }
+  }
+  if(!n)html='<p class="muted">Everything from the suggestions list is already assigned. Create your own below.</p>';
+  box.innerHTML=html;
+  var btns=T.qsa('.t-send',box),k;
+  for(k=0;k<btns.length;k++){
+    btns[k].onclick=function(){
+      var card=this;while(card&&!card.className.match(/\bassign\b/))card=card.parentNode;
+      if(!card)return;
+      var sec=card.getAttribute('data-sec');
+      var title=T.qs('h4',card).textContent;
+      var bodyHTML=T.qs('.body',card).innerHTML;
+      send({floor:sec,title:title,body:bodyHTML,source:'auto'},card,this);
+    };
+  }
+}
+
+function renderAssigned(){
+  var box=el('work-assigned'),html='',i,open=0,done=0;
+  for(i=0;i<assignments.length;i++){
+    var a=assignments[i];
+    if(a.student_id!==curId)continue;
+    if(a.status==='done')done++;else open++;
+    html+='<div class="assign'+(a.status==='done'?' done':'')+'" data-id="'+a.id+'">'+
+      '<h4>'+esc(a.title)+'</h4>'+
+      '<p class="muted">'+(a.floor?esc(floorBadge(a.floor))+' · ':'')+
+      (a.source==='auto'?'auto suggestion':'your activity')+' · '+
+      (a.status==='done'?'<span class="pill green">done '+T.fmtWhen(a.completed_at)+'</span>':
+        '<span class="pill gold">assigned '+T.fmtWhen(a.created_at)+'</span>')+'</p>'+
+      '<div class="body">'+(a.body||'')+'</div>'+
+      '<p><button type="button" class="btn red small t-del">Remove</button></p>'+
+      '</div>';
+  }
+  if(!open&&!done)html='<p class="muted">Nothing assigned yet.</p>';
+  else html='<p class="muted">'+open+' open · '+done+' completed</p>'+html;
+  box.innerHTML=html;
+  var btns=T.qsa('.t-del',box),k;
+  for(k=0;k<btns.length;k++){
+    btns[k].onclick=function(){
+      var card=this;while(card&&!card.getAttribute('data-id'))card=card.parentNode;
+      if(!card)return;
+      var id=card.getAttribute('data-id');
+      if(!window.confirm('Remove this activity?'))return;
+      this.disabled=true;
+      sb.from('assignments').delete().eq('id',id).then(function(){
+        var j;for(j=0;j<assignments.length;j++)if(assignments[j].id===id){assignments.splice(j,1);break;}
+        renderAssigned();renderSuggest(T.stateOf(data,curId));
+      },function(e){window.alert(Auth.friendly(e));});
+    };
+  }
+}
+
+function floorBadge(id){
+  var s=Curriculum.sectionById(id);
+  return s?s.badge:id;
+}
+
+function send(payload,card,btn){
+  if(!curId)return;
+  payload.student_id=curId;
+  var old=btn?btn.innerHTML:'';
+  if(btn){btn.disabled=true;btn.innerHTML='Sending…';}
+  sb.from('assignments').insert(payload).then(function(rows){
+    if(rows&&rows.length)assignments.unshift(rows[0]);
+    if(btn){btn.disabled=false;btn.innerHTML=old;}
+    if(card&&card.parentNode)card.parentNode.removeChild(card);
+    renderAssigned();
+    var box=el('work-suggest');
+    if(!T.qs('.assign',box))renderSuggest(T.stateOf(data,curId));
+    if(payload.source==='manual')T.msg(el('c-msg'),'Sent. The student will see it next time they open the lesson.','ok');
+  },function(e){
+    if(btn){btn.disabled=false;btn.innerHTML=old;}
+    T.msg(el('c-msg'),Auth.friendly(e),'bad');
+  });
+}
+
+/* ---------- custom form ---------- */
+el('custom').onsubmit=function(e){
+  if(e&&e.preventDefault)e.preventDefault();
+  var title=(el('c-title').value||'').replace(/^\s+|\s+$/g,'');
+  var body=(el('c-body').value||'').replace(/^\s+|\s+$/g,'');
+  var floor=el('c-floor').value;
+  if(!title||!body){T.msg(el('c-msg'),'Write a title and the instructions.','bad');return false;}
+  send({floor:floor,title:title,body:textToHTML(body),source:'manual'},null,
+       T.qs('button[type=submit]',el('custom')));
+  el('c-title').value='';el('c-body').value='';
+  return false;
+};
+
+/* ---------- load / views ---------- */
+function load(){
+  T.msg(el('reg-summary'),'Loading…');
+  return T.loadData().then(function(d){
+    data=d;
+    if(!curId){
+      var first=T.students(d);
+      curId=first.length?first[0].id:null;
+    }
+    return T.loadAssignments().then(function(a){
+      assignments=a;
+      renderHead();renderReg();renderWork();
+      T.msg(el('reg-summary'),T.students(d).length+' students');
+    });
+  })['catch'](function(err){
+    T.msg(el('reg-summary'),Auth.friendly(err),'bad');
+    return null;
+  });
+}
+
+function select(id){curId=id;renderWork();}
+
+function switchView(v){
+  var tabs=T.qsa('#tabs .tab'),i;
+  for(i=0;i<tabs.length;i++)
+    tabs[i].className='tab'+(tabs[i].getAttribute('data-view')===v?' on':'');
+  el('view-reg').hidden=(v!=='reg');
+  el('view-work').hidden=(v!=='work');
+}
+
+var tabs=T.qsa('#tabs .tab'),i;
+for(i=0;i<tabs.length;i++)
+  tabs[i].onclick=function(){switchView(this.getAttribute('data-view'));};
+
+el('reg-search').oninput=renderReg;
+el('reg-reload').onclick=load;
+el('work-reload').onclick=load;
+el('stu').onchange=function(){curId=this.value;renderWork();};
+fillFloors();
+
+function fromQuery(){
+  var m=/[?&]st=([^&]+)/.exec(location.search||'');
+  return m?decodeURIComponent(m[1]):null;
+}
+
+T.gate({el:el('gate'),app:el('app'),onReady:function(){
+  var q=fromQuery();
+  if(q)curId=q;
+  load().then(function(){if(q)switchView('work');});
+}});
+})();
+</script>
+</body>
+</html>

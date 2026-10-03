@@ -1,0 +1,87 @@
+/* teacher.css · shared look for aula.html and taller.html (same palette as the lesson) */
+*{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;color-scheme:dark;overflow-x:hidden}
+body{margin:0;background:#1a0510;color:#fff6e2;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:17px;line-height:1.55}
+h1,h2,h3{font-family:Georgia,"Times New Roman",Times,serif;font-weight:400;color:#f0bd4a;margin:.25em 0}
+h1{font-size:2rem}h2{font-size:1.5rem}h3{font-size:1.15rem;color:#fbe39a}
+p{margin:.5em 0}
+a{color:#fbe39a}
+b,strong{color:#f0bd4a}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.thead{background:radial-gradient(ellipse at top,#4a0d27,#1a0510 70%);border-bottom:6px solid #b3122f;padding:26px 16px 18px;text-align:center}
+.thead p{max-width:720px;margin:6px auto}
+.badge{display:inline-block;background:#b3122f;color:#fff6e2;font-weight:800;border-radius:99px;padding:3px 14px;font-size:.85rem;border:1px solid #f0bd4a}
+/* tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:14px 12px;background:#0d0208;border-bottom:2px solid #f0bd4a;position:sticky;top:0;z-index:9}
+.tab{font-family:inherit;font-weight:800;font-size:.95rem;color:#fff6e2;background:transparent;border:1px solid rgba(240,189,74,.4);border-radius:99px;padding:9px 16px;min-height:44px;cursor:pointer}
+.tab.on{background:#f0bd4a;color:#2a0715;border-color:#f0bd4a}
+/* cards */
+.card{background:linear-gradient(160deg,#3a0a20,#250615);border:1px solid rgba(240,189,74,.4);border-radius:16px;padding:16px;margin:14px 0}
+.panel{background:#12030a;border:1px solid rgba(240,189,74,.3);border-radius:16px;padding:14px 16px;margin:14px 0}
+/* buttons */
+.btn{font-family:inherit;font-weight:800;font-size:1rem;color:#fff6e2;background:transparent;border:2px solid #f0bd4a;border-radius:12px;padding:9px 14px;min-height:46px;min-width:46px;cursor:pointer;touch-action:manipulation}
+.btn:hover,.btn:focus{background:rgba(240,189,74,.2)}
+.btn.green{border-color:#3fbf7f}
+.btn.green:hover,.btn.green:focus{background:rgba(63,191,127,.25)}
+.btn.red{border-color:#ff6b6b}
+.btn.red:hover,.btn.red:focus{background:rgba(255,107,107,.22)}
+.btn.small{font-size:.85rem;padding:6px 10px;min-height:38px}
+.btn[disabled]{opacity:.5;cursor:default}
+/* inputs */
+input[type=text],input[type=email],input[type=search],select,textarea{
+  width:100%;font-family:inherit;font-size:1rem;color:#fff6e2;background:rgba(0,0,0,.6);
+  border:2px solid rgba(240,189,74,.55);border-radius:12px;padding:10px;min-height:46px;touch-action:manipulation}
+textarea{min-height:130px;resize:vertical}
+label{display:block;font-size:.85rem;color:#fbe39a;font-weight:700;margin:10px 0 4px}
+/* chips / filters */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{font-family:inherit;font-weight:800;font-size:.85rem;color:#fff6e2;background:transparent;border:1px solid rgba(240,189,74,.45);border-radius:99px;padding:7px 13px;min-height:38px;cursor:pointer}
+.chip.on{background:#f0bd4a;color:#2a0715}
+/* progress meter */
+.meter{height:14px;border-radius:99px;background:rgba(0,0,0,.55);overflow:hidden;border:1px solid rgba(240,189,74,.6)}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,#b3122f,#f0bd4a,#3fbf7f);width:0;-webkit-transition:width .4s;transition:width .4s}
+.meter.thin{height:9px}
+.pct{font-weight:800;color:#fbe39a;font-size:.9rem}
+/* tables */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+td,th{border:1px solid rgba(240,189,74,.3);padding:8px;text-align:left;vertical-align:middle}
+th{background:#4a0d27;color:#f0bd4a;font-weight:800}
+tbody tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+/* student cards */
+.stu{background:linear-gradient(160deg,#2a0716,#180410);border:1px solid rgba(240,189,74,.35);border-radius:16px;padding:14px 16px;margin:12px 0}
+.stu h3{margin:0}
+.stu .mail{font-size:.82rem;color:#d9b98a;word-break:break-all}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px}
+.rowline{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rowline .lbl{min-width:150px;flex:1 1 150px;font-size:.85rem;color:#fbe39a}
+.rowline .meter{flex:2 1 180px}
+.muted{color:#d9b98a;font-size:.85rem}
+.msg{min-height:1.3em;font-size:.9rem;color:#fbe39a}
+.msg.ok{color:#8fe8b8}
+.msg.bad{color:#ff9b9b}
+.pill{display:inline-block;border-radius:99px;padding:2px 10px;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.pill.green{background:#3fbf7f;color:#052014}
+.pill.gold{background:#f0bd4a;color:#2a0715}
+.pill.grey{background:rgba(255,255,255,.14);color:#fff6e2}
+/* live activity stage */
+.stage{background:#0f2a1f;border:1px solid #3fbf7f;border-top:6px solid #3fbf7f;border-radius:16px;padding:18px;margin:14px 0}
+.stage h3{color:#8fe8b8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-weight:800;letter-spacing:.05em;font-size:1rem;margin:0 0 8px}
+.stage ol{margin:8px 0;padding-left:22px;font-size:1.15rem}
+.stage li{margin:8px 0}
+.stage .timer{font-family:Georgia,serif;font-size:2.6rem;color:#fbe39a;font-variant-numeric:tabular-nums}
+.stage .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+/* projection / 10-foot mode */
+.stage.big{position:fixed;left:0;top:0;right:0;bottom:0;z-index:50;margin:0;border-radius:0;overflow:auto;padding:5vh 6vw;background:#0f2a1f}
+.stage.big ol{font-size:1.7rem;line-height:1.7}
+.stage.big h3{font-size:1.6rem}
+.stage.big .timer{font-size:5rem}
+/* hint boxes */
+.hint{border-left:3px solid #b3122f;background:rgba(0,0,0,.35);padding:8px 12px;border-radius:0 10px 10px 0;color:#fbe39a;font-size:.9rem}
+.det{border-top:1px dashed rgba(240,189,74,.3);margin-top:10px;padding-top:10px}
+.sectionbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+@media (max-width:520px){
+  .rowline .lbl{min-width:0;flex:1 1 100%}
+  .rowline .meter{flex:1 1 100%}
+}

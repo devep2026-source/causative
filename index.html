@@ -5,6 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1a0510">
+<link rel="stylesheet" href="auth.css">
 <title>VIP for a Day: The Causative</title>
 <style>
 /* ============ RESET (compact) ============ */
@@ -255,6 +256,12 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 .js .tblock.on{display:block}
 .scene.is-fail .scene-box{display:none}
 .fb.ok{color:#3fbf7f}
+/* ============ EXTRA FROM THE TEACHER ============ */
+#extra{border-top:4px solid #3fbf7f;border-radius:0 0 4px 4px}
+.extra-card{border-top-color:#3fbf7f}
+.extra-body p{margin:.45em 0}
+.extra-body ol,.extra-body ul{margin:.45em 0;padding-left:20px}
+.extra-body .ex{background:rgba(0,0,0,.4);border-radius:10px;padding:8px 12px;margin:6px 0}
 </style>
 <!--[if lt IE 9]>
 <script>
@@ -271,14 +278,23 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 <p>Celebrities don't wash their cars. They <b class="k">have them washed</b>. Today you'll climb six floors, from Guest to Boss, and learn the grammar of people who make things happen: <b class="k">the causative</b>.</p>
 <p class="es" lang="es">En español: el causativo se usa cuando <i>alguien hace que otro haga algo</i> (o que algo ocurra).</p>
 <a class="btn" href="#l1">Enter the red carpet</a>
+<div class="authbox" data-auth></div>
 </header>
 
 <nav class="bar" id="bar" aria-label="Lesson sections">
-<a href="#l1">1 Remember</a><a href="#l2">2 Understand</a><a href="#l3">3 Apply</a><a href="#l4">4 Analyze</a><a href="#l5">5 Evaluate</a><a href="#l6">6 Create</a><a href="#p2">Part 2 Conversations</a><a href="#p3">Part 3 Gym</a><a href="#twist">Plot twist</a>
+<a href="#extra" id="nav-extra" hidden>⭐ Extra for you</a><a href="#l1">1 Remember</a><a href="#l2">2 Understand</a><a href="#l3">3 Apply</a><a href="#l4">4 Analyze</a><a href="#l5">5 Evaluate</a><a href="#l6">6 Create</a><a href="#p2">Part 2 Conversations</a><a href="#p3">Part 3 Gym</a><a href="#twist">Plot twist</a>
 <span class="sc" id="score">0 pts</span>
 </nav>
 
 <main class="wrap" id="main">
+
+<!-- ================= EXTRA FROM YOUR TEACHER ================= -->
+<section class="floor" id="extra" hidden>
+<span class="badge">Extra practice</span>
+<h2>Extra for you</h2>
+<p>Your teacher picked these activities <b class="k">just for you</b>. Do them here, then tap <i>I finished it</i>.</p>
+<div id="extra-list"></div>
+</section>
 
 <!-- ================= FLOOR 1 ================= -->
 <section class="floor" id="l1" data-l="1">
@@ -329,7 +345,6 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 <div class="tri" data-tri>
 <div class="tc"><h4>💡 EXPLAIN</h4><p>The causative means the <b class="k">subject makes something happen through someone else</b>. Your team has six members: <b class="k">have, get, make, let, help</b> and the <b class="k">force / allow / require</b> family.</p><p class="es" lang="es">Cada verbo es un miembro del equipo con un nivel de poder distinto.</p></div>
 <div class="tc ex"><h4>🎬 EXAMPLE</h4><p>✘ <i>Shakira washed her car.</i> She did it herself.<br>✔ <i>Shakira had her car washed.</i> The car-wash team did it, and she is the VIP.</p></div>
-<div class="tc act"><h4>🎯 ACTIVITY · MEMORY RELAY · 5 MIN</h4><ol><li>Groups of 4. Study the flip cards for 2 minutes.</li><li>Teacher calls a verb (for example <i>get</i>).</li><li>Student 1 writes the formula on the board, student 2 adds an example, student 3 says it aloud.</li><li>1 point per correct step. Students rotate.</li></ol><button class="btn t btn-live" type="button" data-min="5">Start timer</button> <span class="tm" aria-live="off"></span></div>
 </div>
 
 <div class="why" data-why>
@@ -419,7 +434,6 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 <div class="tri" data-tri>
 <div class="tc"><h4>💡 EXPLAIN</h4><p>The subject doesn't do the action: the subject <b class="k">causes</b> it. That's the whole idea. The rest is choosing <i>how much power</i> you use.</p><p class="es" lang="es">En español: "Me corté el pelo" es ambiguo. En inglés debes elegir: <i>cut</i> (yo) o <i>had cut</i> (otro).</p></div>
 <div class="tc ex"><h4>🎬 EXAMPLE</h4><p>Same event, three powers:<br><i>My dad <b class="k">let</b> me wash the car.</i> (I wanted to)<br><i>My dad <b class="k">had</b> me wash the car.</i> (a normal request)<br><i>My dad <b class="k">made</b> me wash the car.</i> (no choice)</p></div>
-<div class="tc act"><h4>🎯 ACTIVITY · POWER CHARADES · 6 MIN</h4><ol><li>Groups of 4: 1 VIP, 3 Staff. Roles rotate each round.</li><li>VIP draws a power card (let, have, get, make) and says an order with that verb.</li><li>Staff react: they cheer for <i>let</i>, complain dramatically for <i>make</i>.</li><li>The group scores 1 point when the reaction matches the verb.</li></ol><button class="btn t btn-live" type="button" data-min="6">Start timer</button> <span class="tm" aria-live="off"></span></div>
 </div>
 
 <div class="nu" data-nu>
@@ -506,7 +520,6 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 <div class="tri" data-tri>
 <div class="tc"><h4>💡 EXPLAIN</h4><p>Use the <b class="k">person-or-thing test</b>:<br>Person → verb (<i>have/make/let</i> + base, <i>get</i> + to).<br>Thing → past participle.</p><p class="es" lang="es">Persona → verbo. Cosa → participio.</p></div>
 <div class="tc ex"><h4>🎬 EXAMPLE</h4><p><i>I had the mechanic <b class="k">check</b> the brakes.</i> (person)<br><i>I had my brakes <b class="k">checked</b>.</i> (thing)<br><i>I got my brother <b class="k">to help</b> me.</i> (person + to)</p></div>
-<div class="tc act"><h4>🎯 ACTIVITY · SERVICE DESK · 8 MIN</h4><ol><li>Prepare cards: barber, mechanic, dentist, chef, painter, tailor.</li><li>VIP draws a card and announces a need: <i>I need to get my teeth cleaned!</i></li><li>Staff mime the service. If the VIP used the structure well, the group scores.</li><li>Extra: each student writes 3 orders using person + verb and 3 using thing + participle.</li></ol><button class="btn t btn-live" type="button" data-min="8">Start timer</button> <span class="tm" aria-live="off"></span></div>
 </div>
 
 <div class="nu" data-nu>
@@ -563,7 +576,6 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 <div class="tri" data-tri>
 <div class="tc"><h4>💡 EXPLAIN</h4><p>Four common errors: <b class="k">1)</b> <i>to</i> after make/let. <b class="k">2)</b> base verb after a thing. <b class="k">3)</b> no <i>to</i> after get + person. <b class="k">4)</b> doing it yourself when someone else did it.</p><p class="es" lang="es">Analizar es encontrar la regla que se rompió, no solo corregir.</p></div>
 <div class="tc ex"><h4>🎬 EXAMPLE</h4><p>✘ <i>She made me to cry.</i> → ✔ <i>She made me cry.</i><br>✘ <i>I had my car repair.</i> → ✔ <i>…repaired.</i><br>✘ <i>I got him call.</i> → ✔ <i>…to call.</i></p></div>
-<div class="tc act"><h4>🎯 ACTIVITY · ERROR HUNTERS BATTLE · 8 MIN</h4><ol><li>Teams get 6 wrong sentences. First hand up must explain <i>why</i> it is wrong.</li><li>Correct + correct reason = 2 points. Only the correction = 1 point.</li><li>Round 2: each team writes one wrong sentence and passes it to another team to fix.</li><li>Winner: the team with the trickiest error that was still fixed.</li></ol><button class="btn t btn-live" type="button" data-min="8">Start timer</button> <span class="tm" aria-live="off"></span></div>
 </div>
 
 <div class="nu" data-nu>
@@ -626,7 +638,6 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 <div class="tri" data-tri>
 <div class="tc"><h4>💡 EXPLAIN</h4><p>Evaluating means choosing the <b class="k">best</b> sentence, not just a correct one. Use four criteria: <b class="k">who</b> acts, how much <b class="k">pressure</b>, how <b class="k">polite</b>, how <b class="k">formal</b>.</p><p class="es" lang="es">Varias oraciones pueden estar bien; solo una encaja mejor con la situación.</p></div>
 <div class="tc ex"><h4>🎬 EXAMPLE</h4><p><i>I made the barber cut my hair.</i> → correct but rude.<br><i>I had my hair cut.</i> → natural.<br><i>I got the barber to cut it shorter.</i> → I convinced him.</p></div>
-<div class="tc act"><h4>🎯 ACTIVITY · JUDGE'S COURT · 8 MIN</h4><ol><li>Teacher reads a scenario card.</li><li>Each group shows a green paddle (best sentence) or a red one (weak sentence) and defends it in one sentence.</li><li>The Judge (rotating student) gives a verdict using the four criteria.</li><li>1 point for the best-argued defense.</li></ol><button class="btn t btn-live" type="button" data-min="8">Start timer</button> <span class="tm" aria-live="off"></span></div>
 </div>
 
 <div class="nu" data-nu>
@@ -681,7 +692,6 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 <div class="tri" data-tri>
 <div class="tc"><h4>💡 EXPLAIN</h4><p>Creating means combining everything. Your <b class="k">VIP recipe</b> has five ingredients: a service (<i>have/get + thing + participle</i>), <i>have</i> + person, <i>get</i> + person + to, <i>make</i>, <i>let</i>.</p><p class="es" lang="es">Cinco ingredientes = un día VIP completo.</p></div>
 <div class="tc ex"><h4>🎬 EXAMPLE</h4><p><i>At 7 a.m., the singer <b class="k">had</b> her assistant <b class="k">bring</b> coffee. Then she <b class="k">got</b> her hair <b class="k">styled</b>. Her manager <b class="k">made</b> her <b class="k">rehearse</b>, but the band <b class="k">let</b> her <b class="k">choose</b> the last song.</i></p></div>
-<div class="tc act"><h4>🎯 ACTIVITY · VIP DAY PITCH · 15 MIN</h4><ol><li>Write your VIP's day with the five ingredients (10 min).</li><li>Use the checker and the self-check list to fix your text.</li><li>Read it aloud as a pitch (30 seconds).</li><li>Class votes two awards: <i>Most Powerful Boss</i> and <i>Most Polite Boss</i>.</li></ol><button class="btn t btn-live" type="button" data-min="15">Start timer</button> <span class="tm" aria-live="off"></span></div>
 </div>
 
 <div class="nu" data-nu>
@@ -1090,7 +1100,6 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 <div class="tri" data-tri>
 <div class="tc"><h4>💡 EXPLAIN</h4><p>You already use the causative in daily life. Every time you <b class="k">arrange, convince, order or allow</b> something, you are a small VIP.</p><p class="es" lang="es">Ya lo haces en español; ahora tienes las palabras en inglés.</p></div>
 <div class="tc ex"><h4>🎬 EXAMPLE</h4><p><i>I got my mom to order pizza.</i><br><i>I had my little brother bring me my charger.</i><br><i>My parents let me go out.</i></p></div>
-<div class="tc act"><h4>🎯 ACTIVITY · BOSS INTERVIEW · 6 MIN</h4><ol><li>Pairs. Ask each other: <i>What did you get someone to do this week?</i></li><li>Answer with a causative: <i>I got my sister to…</i></li><li>Change roles, then tell the class one surprising answer about your partner.</li></ol><button class="btn t btn-live" type="button" data-min="6">Start timer</button> <span class="tm" aria-live="off"></span></div>
 </div>
 
 <div class="card chk" id="tw">
@@ -1107,6 +1116,10 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 </main>
 
 <footer class="final"><h2>You just spoke like a boss.</h2><p>Every time you convince, order, allow or arrange, you use the causative. Now you have the words for it.</p></footer>
+<script src="config.js"></script>
+<script src="sb.js"></script>
+<script src="auth.js"></script>
+<script src="sync.js"></script>
 <script>
 (function(){
 'use strict';
@@ -1136,9 +1149,9 @@ function norm(s){return String(s==null?'':s).replace(/[\u2018\u2019]/g,"'").repl
 function trim(s){return String(s==null?'':s).replace(/^\s+|\s+$/g,'');}
 function safe(fn){try{fn();}catch(e){errbar();}}
 
-/* ---------- session storage ---------- */
-function save(k,v){try{sessionStorage.setItem('vip.'+k,v);}catch(e){}}
-function load(k){try{return sessionStorage.getItem('vip.'+k);}catch(e){return null;}}
+/* ---------- storage: always local first, mirrored to the cloud when signed in ---------- */
+function save(k,v){if(window.Progress){Progress.set(k,v);return;}try{localStorage.setItem('vip.'+k,v);}catch(e){}}
+function load(k){if(window.Progress)return Progress.get(k);try{return localStorage.getItem('vip.'+k);}catch(e){return null;}}
 
 /* ---------- score / progress ---------- */
 var pts=0,done={};
@@ -1189,6 +1202,7 @@ function initQuizzes(){
           }else{
             addC(b,'no');b.disabled=true;
             txt(fb,'Not yet. Try another option.');
+            save('w.'+floor+'.'+idx,(parseInt(load('w.'+floor+'.'+idx),10)||0)+1);
           }
         };
       });
@@ -1739,6 +1753,22 @@ safe(initScene);
 safe(initRotation);
 safe(initEnv);
 safe(initKeys);
+
+/* re-hydrate the widgets that can be restored from saved progress
+   (builders / word banks are skipped on purpose: they append nodes) */
+window.__rehydrate=function(){
+  safe(initQuizzes);
+  safe(initTwist);
+  safe(initFill);
+  safe(initStory);
+  safe(initC6);
+};
+
+safe(function(){
+  var box=qs('[data-auth]');
+  if(box&&window.Auth)Auth.mount(box,{context:'student'});
+});
+safe(function(){if(window.Progress)Progress.start();});
 })();
 </script>
 
