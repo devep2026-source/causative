@@ -172,9 +172,13 @@
   }
 
   function gate(o) {
-    var el = o.el, app = o.app, ready = false;
+    var el = o.el, apps = o.apps || (o.app ? [o.app] : []), ready = false;
+    function setApps(h) {
+      var i;
+      for (i = 0; i < apps.length; i++) if (apps[i]) apps[i].hidden = h;
+    }
     function showForm(reason) {
-      if (app) app.hidden = true;
+      setApps(true);
       if (el) {
         el.hidden = false;
         mount(el, {
@@ -193,7 +197,7 @@
     function decide(p) {
       if (!p) { showForm(); return; }
       if (o.role && p.role !== o.role) {
-        if (app) app.hidden = true;
+        setApps(true);
         if (el) {
           el.hidden = false;
           el.innerHTML = '<div class="auth-denied"><p><b>' +
@@ -206,8 +210,19 @@
         return;
       }
       prof = p;
-      if (el) el.hidden = true;
-      if (app) app.hidden = false;
+      if (el) {
+        if (o.keepAuth) {
+          el.hidden = false;
+          mount(el, {
+            context: o.context || 'teacher',
+            after: function (np) { decide(np); },
+            onSignOut: function () { ready = false; showForm(); }
+          });
+        } else {
+          el.hidden = true;
+        }
+      }
+      setApps(false);
       notify();
       if (!ready) { ready = true; if (o.onReady) o.onReady(p); }
     }

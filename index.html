@@ -277,7 +277,7 @@ html.lite .scene-box,html.lite .think{box-shadow:none}
 <h1>VIP for a Day</h1>
 <p>Celebrities don't wash their cars. They <b class="k">have them washed</b>. Today you'll climb six floors, from Guest to Boss, and learn the grammar of people who make things happen: <b class="k">the causative</b>.</p>
 <p class="es" lang="es">En español: el causativo se usa cuando <i>alguien hace que otro haga algo</i> (o que algo ocurra).</p>
-<a class="btn" href="#l1">Enter the red carpet</a>
+<a class="btn" id="enter" href="#l1">Enter the red carpet</a>
 <div class="authbox" data-auth></div>
 </header>
 
@@ -1766,7 +1766,12 @@ window.__rehydrate=function(){
 
 safe(function(){
   var box=qs('[data-auth]');
-  if(box&&window.Auth)Auth.mount(box,{context:'student'});
+  if(box&&window.Auth)Auth.gate({
+    el:box,
+    apps:[qs('#enter'),qs('#bar'),qs('#main')],
+    context:'student',
+    keepAuth:true
+  });
 });
 safe(function(){if(window.Progress)Progress.start();});
 })();
