@@ -28,6 +28,15 @@ returns boolean
 language sql stable security definer set search_path = public
 as $$ select exists (select 1 from public.profiles where id = auth.uid() and role = 'teacher') $$;
 
+-- anyone who signed up BEFORE this schema ran has no profile row yet:
+-- create it now (idempotent, safe to re-run at any time)
+insert into public.profiles (id, email, full_name)
+select u.id,
+       u.email,
+       coalesce(nullif(u.raw_user_meta_data ->> 'full_name', ''), u.email)
+from auth.users u
+on conflict (id) do nothing;
+
 -- profile row is created automatically at signup
 create or replace function public.handle_new_user()
 returns trigger

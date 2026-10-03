@@ -122,7 +122,7 @@
       in: function (c, arr) {
         var vals = [], i;
         for (i = 0; i < arr.length; i++) vals.push(encodeURIComponent(arr[i]));
-        q.filters.push(encodeURIComponent(c) + '.=in.(' + vals.join(',') + ')');
+        q.filters.push(encodeURIComponent(c) + '=in.(' + vals.join(',') + ')');
         return api;
       },
       order: function (c, desc) { q.order = encodeURIComponent(c) + (desc ? '.desc' : '.asc'); return api; },
